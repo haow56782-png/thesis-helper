@@ -1,0 +1,15 @@
+title_cn: 基于深度学习的图像分类方法研究
+title_en: Research on Image Classification Methods Based on Deep Learning
+author: 王好
+student_id: "20210042"
+school: 示范大学
+department: 计算机科学与技术学院
+major: 计算机科学与技术
+advisor: 张教授
+advisor_title: 教授
+date: 2026 年 5 月
+keywords_cn: [深度学习, 图像分类, 卷积神经网络, 迁移学习]
+keywords_en: [Deep Learning, Image Classification, CNN, Transfer Learning]
+
+# 关键：指向 references.bib（相对 main.typ 所在目录）
+bibliography_path: references.bib

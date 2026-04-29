@@ -1,0 +1,37 @@
+# 通用本科论文规范（默认基线）
+# 字号约定：可写中文字号（"小四"）、pt（"12pt"）、或纯数字（12）
+school_id: generic
+school_name: "通用本科论文范本"
+cover_subtitle: "本科毕业论文"
+
+fonts:
+  songti: ["Source Han Serif SC", "Noto Serif CJK SC", "SimSun"]
+  heiti:  ["Source Han Sans SC",  "Noto Sans CJK SC",  "SimHei"]
+  kaiti:  ["KaiTi", "STKaiti"]
+  en:     ["Times New Roman", "Liberation Serif"]
+
+sizes:
+  body:  "小四"      # 正文
+  h1:    "三号"      # 章标题
+  h2:    "四号"      # 节标题
+  h3:    "小四"      # 小节标题
+  title: "二号"      # 论文大标题
+  fig_caption: "五号"
+
+page:
+  paper: "a4"
+  margin:
+    top:    "2.5cm"
+    bottom: "2.5cm"
+    left:   "3cm"
+    right:  "2.5cm"
+
+paragraph:
+  leading: "1em"        # 行间距（≈ 1.5 倍行距视觉）
+  spacing: "0.7em"      # 段间距
+  first_indent: "2em"   # 首行缩进
+
+chapter_prefix: chinese   # chinese: 第一章；arabic: 1；none: 无前缀
+
+bibliography:
+  style: "gb-7714-2015-numeric"   # GB/T 7714-2015 顺序编码制

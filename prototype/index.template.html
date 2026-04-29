@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>论文格式助手</title>
+<style>
+:root {
+  --bg:    #f8f6f1;
+  --paper: #ffffff;
+  --ink:   #1c1c1a;
+  --soft:  #52524e;
+  --muted: #9a9890;
+  --rule:  #e4e0d6;
+  --rule2: #ccc8bc;
+  --ac:    #2c4a3e;
+  --ac2:   #3d6b58;
+  --warn:  #a0622a;
+  --err:   #9b3535;
+  --ok:    #3a6645;
+  --hi:    #f0ead8;
+  --serif: 'Noto Serif SC','Source Han Serif SC',Georgia,serif;
+  --sans:  'Noto Sans SC','PingFang SC','Microsoft YaHei',sans-serif;
+  --mono:  'JetBrains Mono','SF Mono','Fira Code',Consolas,monospace;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:15px;line-height:1.65;-webkit-font-smoothing:antialiased}
+
+/* BAR */
+.bar{position:sticky;top:0;z-index:100;background:rgba(248,246,241,.93);backdrop-filter:blur(14px);border-bottom:1px solid var(--rule);padding:0 32px;height:52px;display:flex;align-items:center;justify-content:space-between}
+.logo{display:flex;align-items:center;gap:10px;font-family:var(--serif);font-size:17px;font-weight:600}
+.logo-icon{width:26px;height:26px;border:1.5px solid var(--ink);border-radius:4px;display:grid;place-items:center;font-size:13px;font-family:var(--serif);font-weight:700}
+.badge{font-family:var(--mono);font-size:10px;color:var(--muted);border:1px solid var(--rule2);padding:2px 8px;border-radius:3px;text-transform:uppercase;letter-spacing:.07em}
+.steps-nav{display:flex;align-items:center;gap:20px}
+.sdot{width:28px;height:28px;border-radius:50%;border:1.5px solid var(--rule2);background:transparent;display:grid;place-items:center;font-family:var(--mono);font-size:11px;color:var(--muted);cursor:pointer;transition:all .2s;position:relative}
+.sdot+.sdot::before{content:'';position:absolute;right:100%;width:20px;height:1px;background:var(--rule2);top:50%;transform:translateY(-50%);margin-right:-2px}
+.sdot.done{background:var(--ac);border-color:var(--ac);color:#fff}
+.sdot.active{background:var(--ink);border-color:var(--ink);color:#fff;transform:scale(1.15)}
+
+/* WRAP + SECTION */
+.wrap{max-width:1100px;margin:0 auto;padding:0 28px}
+.section{padding:68px 0 76px;border-bottom:1px solid var(--rule);transition:opacity .4s}
+.section.locked{opacity:.35;pointer-events:none}
+.slabel{font-family:var(--mono);font-size:11px;text-transform:uppercase;letter-spacing:.14em;color:var(--muted);display:flex;align-items:center;gap:12px;margin-bottom:10px}
+.slabel::before{content:'';width:22px;height:1px;background:var(--muted)}
+.stitle{font-family:var(--serif);font-size:34px;font-weight:500;letter-spacing:-.015em;margin-bottom:10px;line-height:1.15}
+.ssub{color:var(--soft);max-width:560px;font-size:14.5px;margin-bottom:40px}
+
+/* UPLOAD */
+.upload-row{display:grid;grid-template-columns:1fr 340px;gap:24px;align-items:start}
+.drop{border:1.5px dashed var(--rule2);border-radius:10px;padding:52px 32px;text-align:center;background:var(--paper);cursor:pointer;transition:all .2s;position:relative;overflow:hidden}
+.drop:hover,.drop.drag{border-color:var(--ac);background:#f9faf8}
+.drop.running{border-style:solid;border-color:var(--ac)}
+.ficon{width:44px;height:52px;margin:0 auto 18px;border:1.5px solid var(--rule2);border-radius:4px;position:relative;display:flex;align-items:flex-end;justify-content:center;padding-bottom:9px}
+.ficon::after{content:'';position:absolute;top:-1.5px;right:-1.5px;width:14px;height:14px;background:var(--bg);border-left:1.5px solid var(--rule2);border-bottom:1.5px solid var(--rule2)}
+.ficon span{font-family:var(--mono);font-size:9px;color:var(--muted);letter-spacing:.06em}
+.drop h3{font-family:var(--serif);font-size:20px;font-weight:500;margin-bottom:6px}
+.drop p{color:var(--muted);font-size:13px;margin-bottom:22px}
+.btn{display:inline-flex;align-items:center;gap:6px;padding:9px 18px;border-radius:6px;font-size:13.5px;font-weight:500;font-family:var(--sans);border:none;cursor:pointer;transition:all .18s}
+.btn-d{background:var(--ink);color:#fff}.btn-d:hover{opacity:.84}
+.dhint{margin-top:14px;font-family:var(--mono);font-size:11px;color:var(--muted)}
+.config{background:var(--paper);border:1px solid var(--rule);border-radius:10px;padding:24px}
+.config h4{font-size:13px;font-weight:600;margin-bottom:18px;display:flex;align-items:center;gap:8px}
+.config h4::before{content:'';width:3px;height:14px;background:var(--ac);border-radius:2px}
+.field{margin-bottom:16px}
+.flabel{display:block;font-family:var(--mono);font-size:10.5px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);margin-bottom:5px}
+.field select{width:100%;padding:7px 11px;border:1px solid var(--rule2);border-radius:6px;background:var(--bg);font-size:13.5px;font-family:var(--sans);color:var(--ink)}
+.field select:focus{outline:none;border-color:var(--ac)}
+.wbox{margin-top:8px;padding:10px 12px;background:#fef6ec;border-left:3px solid var(--warn);border-radius:0 6px 6px 0;font-size:12px;color:var(--soft);line-height:1.5;display:none}
+.wbox.show{display:block}
+.wbox strong{color:var(--warn)}
+.cbrow{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--soft);cursor:pointer;margin-top:6px}
+.cbrow input{accent-color:var(--ac)}
+
+/* CONSOLE */
+.console{margin-top:20px;background:#1c1c1a;color:#c4c0b4;border-radius:10px;padding:16px 18px;font-family:var(--mono);font-size:12px;line-height:1.75;min-height:104px;max-height:195px;overflow-y:auto;white-space:pre-wrap;display:none;box-shadow:inset 0 0 0 1px rgba(255,255,255,.05)}
+.console .ok{color:#78a878}.console .w{color:#c8924a}.console .dim{opacity:.5}.console .arr{color:#5f8e76}
+
+/* LINT */
+.sgrid{display:grid;grid-template-columns:repeat(4,1fr);background:var(--rule);gap:1px;border:1px solid var(--rule);border-radius:10px;overflow:hidden;margin-bottom:28px}
+.scard{background:var(--paper);padding:22px 18px}
+.snum{font-family:var(--serif);font-size:40px;font-weight:500;line-height:1;margin-bottom:4px}
+.slbl2{font-family:var(--mono);font-size:10.5px;text-transform:uppercase;letter-spacing:.09em;color:var(--muted)}
+.snum.sc{color:var(--ac)}.snum.se{color:var(--err)}.snum.sw{color:var(--warn)}.snum.si{color:var(--muted)}
+.ltable{border:1px solid var(--rule);border-radius:10px;overflow:hidden}
+.lrow{padding:16px 20px;border-bottom:1px solid var(--rule);display:grid;grid-template-columns:26px 56px 1fr 90px;gap:14px;align-items:start;transition:background .15s}
+.lrow:last-child{border-bottom:none}.lrow:hover{background:#f9f7f0}
+.lic{width:22px;height:22px;border-radius:3px;display:grid;place-items:center;font-family:var(--mono);font-size:12px;font-weight:700;color:#fff}
+.lic.e{background:var(--err)}.lic.w{background:var(--warn)}.lic.i{background:var(--muted)}
+.lcode{font-family:var(--mono);font-size:11px;color:var(--muted);padding-top:2px}
+.lmsg{font-size:13.5px;font-weight:500;margin-bottom:4px}
+.lsnip{font-family:var(--mono);font-size:11.5px;color:var(--soft);background:var(--hi);padding:2px 7px;border-radius:3px}
+.lloc{font-family:var(--mono);font-size:11px;color:var(--muted);text-align:right;padding-top:3px}
+
+/* PREVIEW */
+.pvrow{display:grid;grid-template-columns:160px 1fr;gap:24px;align-items:start}
+.tlist{display:flex;flex-direction:column;gap:10px}
+.thumb{border:1.5px solid var(--rule);border-radius:6px;overflow:hidden;cursor:pointer;transition:all .2s}
+.thumb img{width:100%;display:block}
+.tname{padding:6px 8px;font-family:var(--mono);font-size:10.5px;color:var(--muted);border-top:1px solid var(--rule);background:var(--paper)}
+.thumb.sel{border-color:var(--ac);box-shadow:0 0 0 2px rgba(44,74,62,.12)}
+.thumb.sel .tname{color:var(--ac);font-weight:600}
+.pane{background:var(--paper);border:1px solid var(--rule);border-radius:10px;padding:24px;position:relative;min-height:540px;display:flex;align-items:center;justify-content:center}
+.pane img{max-width:100%;max-height:680px;box-shadow:0 4px 32px rgba(28,28,26,.1);border-radius:1px}
+.ptoolbar{position:absolute;top:14px;right:14px;display:flex;gap:4px;background:var(--paper);border:1px solid var(--rule);border-radius:6px;padding:3px}
+.pbtn{padding:5px 10px;border:none;background:transparent;font-family:var(--mono);font-size:11px;color:var(--soft);border-radius:3px;cursor:pointer}
+.pbtn:hover{background:var(--bg);color:var(--ink)}
+.pnav{position:absolute;bottom:16px;left:50%;transform:translateX(-50%);display:flex;gap:10px;align-items:center}
+.navbtn{width:30px;height:30px;border-radius:50%;border:1px solid var(--rule2);background:var(--paper);cursor:pointer;font-size:16px;color:var(--soft);display:grid;place-items:center;transition:all .15s}
+.navbtn:hover:not(:disabled){border-color:var(--ink);color:var(--ink)}
+.navbtn:disabled{opacity:.3;cursor:default}
+.pind{font-family:var(--mono);font-size:11px;color:var(--muted)}
+
+/* DOWNLOAD */
+.dgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.dcard{background:var(--paper);border:1px solid var(--rule);border-radius:10px;padding:24px 20px;display:flex;flex-direction:column;gap:10px;transition:all .18s}
+.dcard:hover{border-color:var(--ac);transform:translateY(-2px);box-shadow:0 8px 28px rgba(28,28,26,.07)}
+.dtype{font-family:var(--mono);font-size:10.5px;color:var(--muted);text-transform:uppercase;letter-spacing:.09em}
+.dname{font-family:var(--serif);font-size:18px;font-weight:500}
+.dmeta{font-family:var(--mono);font-size:11.5px;color:var(--muted);flex:1}
+.dlink{display:inline-flex;align-items:center;gap:5px;color:var(--ac);text-decoration:none;font-size:13px;font-weight:500;border-top:1px solid var(--rule);padding-top:10px;margin-top:2px}
+.dlink:hover{color:var(--ink)}
+
+/* STATUS PILL */
+.pill{display:inline-flex;align-items:center;gap:6px;padding:3px 10px;border-radius:100px;font-family:var(--mono);font-size:11px;font-weight:500}
+.pill::before{content:'';width:6px;height:6px;border-radius:50%;background:currentColor}
+.pill.idle{color:var(--muted);background:var(--bg);border:1px solid var(--rule)}
+.pill.run{color:var(--ac2);background:#edf2ef}
+.pill.done{color:var(--ok);background:#ecf2ee}
+
+footer{padding:52px 0 68px;text-align:center;font-family:var(--mono);font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.1em}
+footer hr{border:none;height:1px;background:var(--rule);width:44px;margin:0 auto 18px}
+
+@keyframes fadein{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.fadein{animation:fadein .45s ease both}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.55}}
+
+@media(max-width:860px){
+  .upload-row{grid-template-columns:1fr}
+  .sgrid{grid-template-columns:repeat(2,1fr)}
+  .pvrow{grid-template-columns:1fr}
+  .tlist{flex-direction:row;overflow-x:auto}
+  .thumb{min-width:90px}
+  .dgrid{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+
+<header class="bar">
+  <div class="logo">
+    <div class="logo-icon">论</div>
+    论文格式助手
+    <span class="badge" id="mbadge">prototype · v0.5</span>
+  </div>
+  <div class="steps-nav">
+    <div class="sdot active" data-s="0" title="上传">1</div>
+    <div class="sdot"        data-s="1" title="体检">2</div>
+    <div class="sdot"        data-s="2" title="预览">3</div>
+    <div class="sdot"        data-s="3" title="下载">4</div>
+  </div>
+</header>
+
+<main>
+
+<!-- ── 1. UPLOAD ── -->
+<section class="section" id="s0">
+<div class="wrap">
+  <div class="slabel">第 1 步 / Upload <span class="pill idle" id="p0">等待文件</span></div>
+  <h2 class="stitle">上传你的论文</h2>
+  <p class="ssub">支持 .docx 格式。所有处理在本地完成，不会上传到任何服务器。</p>
+
+  <div class="upload-row">
+    <div>
+      <div class="drop" id="drop" tabindex="0">
+        <div class="ficon"><span>docx</span></div>
+        <h3>拖入 .docx 文件，或点击选择</h3>
+        <p>建议文件大小不超过 20 MB</p>
+        <button class="btn btn-d" id="demo-btn">▸ 用示例论文演示</button>
+        <div class="dhint">示例：数字经济背景下中小企业财务共享服务中心建设研究 · 会计学</div>
+      </div>
+      <div class="console" id="con"></div>
+    </div>
+
+    <div class="config">
+      <h4>配置</h4>
+      <div class="field">
+        <label class="flabel">学校规范</label>
+        <select id="school-sel">
+          <option value="generic">通用本科范本</option>
+          <option value="nju">南京大学</option>
+          <option value="cqcst" selected>重庆城市科技学院</option>
+        </select>
+        <div class="wbox show" id="school-warn">
+          <strong>⚠ Placeholder 状态</strong> · 该校官方规范文档尚未取得，当前使用通用参数，PDF 不能直接交付。
+        </div>
+      </div>
+      <div class="field">
+        <label class="flabel">参考文献来源</label>
+        <select>
+          <option>从知网粘贴的 .txt 文本</option>
+          <option>BibTeX (.bib)</option>
+          <option>Hayagriva YAML</option>
+          <option>不使用</option>
+        </select>
+      </div>
+      <div class="field">
+        <label class="flabel">运行选项</label>
+        <label class="cbrow"><input type="checkbox" checked> 生成格式体检报告</label>
+        <label class="cbrow"><input type="checkbox" checked> 自动转换 Word 公式（OMML→Typst）</label>
+      </div>
+    </div>
+  </div>
+</div>
+</section>
+
+<!-- ── 2. LINT ── -->
+<section class="section locked" id="s1">
+<div class="wrap">
+  <div class="slabel">第 2 步 / Lint <span class="pill idle" id="p1">等待中</span></div>
+  <h2 class="stitle">格式体检报告</h2>
+  <p class="ssub">基于 6 类规则检测原始 docx。警告项可继续编译，错误项建议修复后重跑。</p>
+  <div class="sgrid">
+    <div class="scard"><div class="snum sc" id="ns">—</div><div class="slbl2">综合评分</div></div>
+    <div class="scard"><div class="snum se" id="ne">—</div><div class="slbl2">错误</div></div>
+    <div class="scard"><div class="snum sw" id="nw">—</div><div class="slbl2">警告</div></div>
+    <div class="scard"><div class="snum si" id="ni">—</div><div class="slbl2">提示</div></div>
+  </div>
+  <div class="ltable" id="ltable"></div>
+</div>
+</section>
+
+<!-- ── 3. PREVIEW ── -->
+<section class="section locked" id="s2">
+<div class="wrap">
+  <div class="slabel">第 3 步 / Preview <span class="pill idle" id="p2">等待中</span></div>
+  <h2 class="stitle">排版结果预览</h2>
+  <p class="ssub">Typst 编译产出。左侧点击切换章节，底部箭头翻页。</p>
+  <div class="pvrow">
+    <div class="tlist" id="tlist">
+      <div class="thumb sel" data-i="0"><img id="th0" alt="封面"/><div class="tname">封面</div></div>
+      <div class="thumb"     data-i="1"><img id="th1" alt="目录"/><div class="tname">目录</div></div>
+      <div class="thumb"     data-i="2"><img id="th2" alt="正文"/><div class="tname">正文·公式</div></div>
+      <div class="thumb"     data-i="3"><img id="th3" alt="参考文献"/><div class="tname">参考文献</div></div>
+    </div>
+    <div class="pane" id="pane">
+      <div class="ptoolbar">
+        <button class="pbtn" id="open-pdf">在浏览器打开 PDF</button>
+      </div>
+      <img id="pimg" alt="页面预览"/>
+      <div class="pnav">
+        <button class="navbtn" id="nav-p" disabled>‹</button>
+        <span class="pind" id="pind">1 / 4</span>
+        <button class="navbtn" id="nav-n">›</button>
+      </div>
+    </div>
+  </div>
+</div>
+</section>
+
+<!-- ── 4. DOWNLOAD ── -->
+<section class="section locked" id="s3">
+<div class="wrap">
+  <div class="slabel">第 4 步 / Download <span class="pill idle" id="p3">等待中</span></div>
+  <h2 class="stitle">下载产物</h2>
+  <p class="ssub">所有产物本地生成。除 PDF 外，还可以下载体检报告和 Typst 源文件。</p>
+  <div class="dgrid">
+    <div class="dcard">
+      <div class="dtype">PDF · 主产物</div>
+      <div class="dname">final.pdf</div>
+      <div class="dmeta" id="dm0">359 KB · 13 页 · A4</div>
+      <a class="dlink" href="assets/demo.pdf" target="_blank" id="dl-pdf">↓ 下载 PDF</a>
+    </div>
+    <div class="dcard">
+      <div class="dtype">文本 · 辅助</div>
+      <div class="dname">lint.txt</div>
+      <div class="dmeta" id="dm1">格式体检报告</div>
+      <a class="dlink" href="#" id="dl-lint">↓ 下载报告</a>
+    </div>
+    <div class="dcard">
+      <div class="dtype">Typst · 源</div>
+      <div class="dname">main.typ</div>
+      <div class="dmeta">可在 Typst 编辑器继续修改</div>
+      <a class="dlink" href="#" id="dl-typ">↓ 下载源文件</a>
+    </div>
+  </div>
+</div>
+</section>
+
+<footer>
+  <hr/>
+  论文格式助手 · 本地演示版 · 数据不会上传任何服务器<br>
+  实际接入后端：<code style="font-family:var(--mono);background:var(--hi);padding:1px 6px;border-radius:3px">python server.py</code>
+</footer>
+</main>
+
+<script>
+// ── 图片 base64（构建时注入）──
+const IMGS = __IMGS__;
+
+// 填缩略图
+['cover','toc','body','bib'].forEach((k,i) => { document.getElementById('th'+i).src = IMGS[k]; });
+
+// ── 体检数据（真实 lint 结果）──
+const LINT = [
+  {s:'e',code:'L1',msg:'疑似手动伪标题（未使用 Heading 样式）',snip:'摘 要',loc:'para 1'},
+  {s:'e',code:'L1',msg:'疑似手动伪标题（未使用 Heading 样式）',snip:'Abstract',loc:'para 6'},
+  {s:'w',code:'L3',msg:'正文段缺少首行缩进 2 字符',snip:'Keywords: Digital Economy...',loc:'para 10'},
+  {s:'w',code:'L3',msg:'正文段缺少首行缩进 2 字符',snip:'$ "CSR" = ("C"_("before")...',loc:'para 59'},
+  {s:'w',code:'L3',msg:'正文段缺少首行缩进 2 字符',snip:'$ "EIR" = ("T"_("before")...',loc:'para 61'},
+  {s:'w',code:'L3',msg:'正文段缺少首行缩进 2 字符',snip:'此处由 cnki_refs_accounting...',loc:'para 73'},
+];
+
+// ── 状态工具 ──
+const secs = [0,1,2,3].map(i=>document.getElementById('s'+i));
+const dots = document.querySelectorAll('.sdot');
+const pills = [0,1,2,3].map(i=>document.getElementById('p'+i));
+
+function setPill(i,cls,txt){ pills[i].className='pill '+cls; pills[i].textContent=txt; }
+function setDot(cur){
+  dots.forEach((d,i)=>{
+    d.classList.toggle('active',i===cur);
+    d.classList.toggle('done',i<cur);
+  });
+}
+function unlock(i){
+  secs[i].classList.remove('locked');
+  secs[i].classList.add('fadein');
+}
+dots.forEach(d=>d.addEventListener('click',()=>secs[+d.dataset.s].scrollIntoView({behavior:'smooth',block:'start'})));
+
+// ── 学校警告 ──
+const schoolSel=document.getElementById('school-sel');
+const schoolWarn=document.getElementById('school-warn');
+schoolSel.onchange=()=>schoolWarn.classList.toggle('show',schoolSel.value==='cqcst');
+
+// ── 预览页切换 ──
+const PK=['cover','toc','body','bib'];
+let cur=0;
+const pimg=document.getElementById('pimg');
+const pind=document.getElementById('pind');
+const navP=document.getElementById('nav-p');
+const navN=document.getElementById('nav-n');
+
+function goPage(n){
+  cur=Math.max(0,Math.min(PK.length-1,n));
+  pimg.src=IMGS[PK[cur]];
+  pind.textContent=(cur+1)+' / '+PK.length;
+  navP.disabled=cur===0; navN.disabled=cur===PK.length-1;
+  document.querySelectorAll('.thumb').forEach((t,i)=>t.classList.toggle('sel',i===cur));
+}
+goPage(0);
+navP.onclick=()=>goPage(cur-1);
+navN.onclick=()=>goPage(cur+1);
+document.querySelectorAll('.thumb').forEach((t,i)=>t.addEventListener('click',()=>goPage(i)));
+document.getElementById('open-pdf').onclick=()=>window.open('assets/demo.pdf','_blank');
+
+// ── 体检渲染 ──
+function renderLint(){
+  const c={e:0,w:0,i:0}; LINT.forEach(r=>c[r.s]++);
+  const score=Math.max(0,100-c.e*8-c.w*3-c.i);
+  document.getElementById('ns').textContent=score;
+  document.getElementById('ne').textContent=c.e;
+  document.getElementById('nw').textContent=c.w;
+  document.getElementById('ni').textContent=c.i;
+  document.getElementById('dm1').textContent=LINT.length+' 条问题 · '+c.e+' 错 / '+c.w+' 警';
+  const ICN={e:'×',w:'!',i:'i'};
+  document.getElementById('ltable').innerHTML=LINT.map(r=>`
+    <div class="lrow">
+      <span class="lic ${r.s}">${ICN[r.s]}</span>
+      <span class="lcode">${r.code}</span>
+      <div><div class="lmsg">${r.msg}</div><span class="lsnip">${r.snip}</span></div>
+      <span class="lloc">${r.loc}</span>
+    </div>`).join('');
+}
+
+// ── console ──
+const con=document.getElementById('con');
+function logClear(first){ con.style.display='block'; con.textContent=first||''; }
+function logLine(html,ms){ return new Promise(r=>setTimeout(()=>{ con.innerHTML+='\n'+html; con.scrollTop=con.scrollHeight; r(); },ms)); }
+
+// ── 流水线演示 ──
+const drop=document.getElementById('drop');
+let busy=false;
+
+async function run(){
+  if(busy) return; busy=true;
+  drop.classList.add('running');
+  setDot(0); setPill(0,'run','处理中…');
+  logClear('<span class="dim">$ python run.py accounting_thesis.docx accounting_meta.yaml --school cqcst</span>');
+
+  await logLine('<span class="arr">→</span> 读取 accounting_thesis.docx (42 KB)',400);
+  await logLine('<span class="arr">→</span> 解析 docx → 81 blocks  段落 51 · 标题 23 · 表格 3 · 列表 4',650);
+  setPill(0,'done','已就绪'); setDot(1);
+
+  unlock(1); secs[1].scrollIntoView({behavior:'smooth',block:'start'});
+  setPill(1,'run','体检中…');
+  await logLine('<span class="arr">→</span> 格式体检：检测 6 类规则',500);
+  await logLine('<span class="w">⚠</span>  发现 2 个错误 / 4 个警告',600);
+  renderLint(); setPill(1,'done','完成 · 6 条'); setDot(2);
+
+  unlock(2); secs[2].scrollIntoView({behavior:'smooth',block:'start'});
+  setPill(2,'run','编译中…');
+  await logLine('<span class="arr">→</span> 知网文本 → 12 条 hayagriva 参考文献',700);
+  await logLine('<span class="arr">→</span> 中括号引用 [1]…[11-12] → GB/T 7714 上标',500);
+  await logLine('<span class="arr">→</span> 套用 cqcst 模板 (placeholder, 已警告)',400);
+  await logLine('<span class="arr">→</span> typst compile main.typ',750);
+  await logLine('<span class="ok">✓</span>  PDF 生成：359 KB · 13 页 · 用时 0.89s',900);
+  setPill(2,'done','编译完成'); setDot(3);
+
+  unlock(3);
+  await logLine('<span class="w">⚠</span>  cqcst 为 placeholder 状态，核对规范后再交付',300);
+  setPill(3,'done','已就绪');
+  drop.classList.remove('running'); busy=false;
+  setTimeout(()=>secs[3].scrollIntoView({behavior:'smooth',block:'start'}),1000);
+}
+
+document.getElementById('demo-btn').addEventListener('click',e=>{e.stopPropagation();run();});
+drop.addEventListener('click',e=>{ if(e.target.tagName!=='BUTTON') run(); });
+drop.addEventListener('keydown',e=>{ if(e.key==='Enter'||e.key===' ') run(); });
+['dragover','dragenter'].forEach(ev=>drop.addEventListener(ev,e=>{e.preventDefault();drop.classList.add('drag');}));
+['dragleave','drop'].forEach(ev=>drop.addEventListener(ev,e=>{e.preventDefault();drop.classList.remove('drag');if(ev==='drop')run();}));
+
+// WIRED 模式
+if(window.WIRED){
+  const b=document.getElementById('mbadge');
+  b.textContent='live · v0.5'; b.style.color='var(--ac)'; b.style.borderColor='var(--ac)';
+}
+
+// 滚动同步进度点
+window.addEventListener('scroll',()=>{
+  if(busy) return;
+  const y=window.scrollY+window.innerHeight*.4;
+  let idx=0; secs.forEach((s,i)=>{ if(s.offsetTop<y) idx=i; });
+  setDot(idx);
+});
+
+// ── 下载 ──
+function dlText(name,txt){
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(new Blob([txt],{type:'text/plain'}));
+  a.download=name; a.click();
+}
+document.getElementById('dl-lint').addEventListener('click',e=>{
+  e.preventDefault();
+  const icon={e:'❌',w:'⚠️',i:'ℹ️'};
+  dlText('lint.txt',['格式体检报告','='.repeat(60),...LINT.map(r=>`${icon[r.s]} [${r.code}] ${r.msg}  ${r.loc}  「${r.snip}」`)].join('\n'));
+});
+document.getElementById('dl-typ').addEventListener('click',e=>{
+  e.preventDefault();
+  dlText('main.typ','// 论文格式助手 · 自动生成\n// 完整源文件请通过 run.py 或 server.py 获取\n#import "core.typ": *\n');
+});
+</script>
+</body>
+</html>

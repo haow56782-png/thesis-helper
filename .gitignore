@@ -1,0 +1,53 @@
+# ── Python ──
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.Python
+*.egg-info/
+dist/
+build/
+.venv/
+venv/
+*.pyc
+
+# ── 编译产物（可重新生成）──
+output/
+*.pdf
+!prototype/assets/demo.pdf
+# PNG — 允许 prototype/assets/preview-*.png 进入仓库
+*.png
+!prototype/assets/preview-*.png
+
+# ── prototype 构建产物 ──
+/prototype/index.html
+/prototype/preview-data.json
+/prototype/assets/small-*.png
+
+# ── 调试截图（不属于源码）──
+prototype/s-*.png
+prototype/screenshot-*.png
+prototype/shot-*.png
+
+# ── 编辑器 / 系统 ──
+.DS_Store
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+Thumbs.db
+
+# ── 备份文件 ──
+*.bak
+*.orig
+_*.typ
+
+# ── 临时运行文件 ──
+/tmp/
+*.log
+
+# ── 环境变量 / 密钥 ──
+.env
+.env.*
+!.env.example

@@ -1,0 +1,37 @@
+# 南京大学本科毕业论文格式（示意，实际细节以学校最新规范为准）
+# 这份样例用于演示"换学校 = 换 yaml"——任何与 generic 不同的字段都覆盖
+school_id: nju
+school_name: "南京大学"
+cover_subtitle: "本科生毕业论文（设计）"
+
+fonts:
+  songti: ["Source Han Serif SC", "Noto Serif CJK SC", "SimSun"]
+  heiti:  ["Source Han Sans SC",  "Noto Sans CJK SC",  "SimHei"]
+  kaiti:  ["KaiTi", "STKaiti"]
+  en:     ["Times New Roman", "Liberation Serif"]
+
+sizes:
+  body:  "小四"      # 12pt
+  h1:    "小三"      # 15pt（南大常见：章标题小三加粗）
+  h2:    "四号"      # 14pt
+  h3:    "小四"      # 12pt
+  title: "二号"      # 22pt
+  fig_caption: "五号"
+
+page:
+  paper: "a4"
+  margin:
+    top:    "2.5cm"
+    bottom: "2.5cm"
+    left:   "3.0cm"
+    right:  "2.5cm"
+
+paragraph:
+  leading: "1.0em"        # 1.5 倍行距视觉
+  spacing: "0pt"
+  first_indent: "2em"
+
+chapter_prefix: chinese
+
+bibliography:
+  style: "gb-7714-2015-numeric"

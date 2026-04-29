@@ -1,0 +1,12 @@
+[1] 国务院.国务院关于印发"十四五"数字经济发展规划的通知[R]. 北京: 国务院, 2022.
+[2] 杨周南, 赵纳晖. 论会计管理信息化的 ESM 集成模型[J]. 会计研究, 2022, (8): 12-19.
+[3] 陈虎, 孙彦丛. 财务共享服务[M]. 北京: 中国财政经济出版社, 2014.
+[4] Quinn B, Cooke R, Kris A. Shared Services: Mining for Corporate Gold[M]. London: Pearson Education, 2000.
+[5] Ulbrich F. The adoption of IT-enabled management ideas: insights from shared services in government agencies[J]. Journal of Information Technology, 2010, 25(2): 168-184.
+[6] Richins G, Stapleton A, Stratopoulos T C, et al. Big Data Analytics: Opportunity or Threat for the Accounting Profession[J]. Journal of Information Systems, 2017, 31(3): 63-79.
+[7] 张瑞君, 蒋国发, 陈虎. 企业集团财务共享服务模式研究[J]. 会计研究, 2010, (11): 65-69.
+[8] 陈虎, 孙彦丛. 财务共享服务中心信息系统建设[M]. 北京: 中国财政经济出版社, 2017.
+[9] 王素玲, 李航. 中小企业财务共享服务中心建设路径研究[J]. 财会通讯, 2021, (15): 110-113.
+[10] 刘梅玲. 中小企业财务共享服务实施障碍与对策[J]. 财会月刊, 2022, (7): 88-93.
+[11] 张磊. 数字经济背景下企业财务共享服务转型研究[D]. 上海: 上海财经大学, 2023.
+[12] 黄诚. 基于 RPA 的中小企业财务共享服务流程优化研究[J]. 会计之友, 2023, (4): 142-148.
